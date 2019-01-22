@@ -8,7 +8,7 @@ Tale Uri
 ========
 
 What is Tale Uri?
---------------------
+-----------------
 
 This is a basic and lightweight implementation of the 
 `Psr\Http\Message\UriInterface` and the `Psr\Http\Message\UriFactoryInterface`. 

@@ -109,8 +109,8 @@ final class Uri implements UriInterface
         string $path = '',
         string $query = '',
         string $fragment = ''
-    )
-    {
+    ) {
+    
         $this->scheme = $this->filterScheme($scheme);
         $this->user = $this->filterUser($user);
         $this->password = $this->user === '' ? '' : $this->filterPassword($password);
@@ -418,7 +418,7 @@ final class Uri implements UriInterface
         $delims = $withDelimeters ? '!\'\(\)\*' : '';
         return preg_replace_callback(
             '/(?:[^a-zA-Z0-9_\-\.~\+;,=\$&%:@\/\?'.$delims.']+|%(?![A-Fa-f0-9]{2}))/',
-            function($matches) {
+            function ($matches) {
                 return rawurlencode($matches[0]);
             },
             $value

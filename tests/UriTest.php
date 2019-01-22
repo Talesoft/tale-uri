@@ -506,15 +506,27 @@ class UriTest extends TestCase
             ['/some-path', new Uri('', '', '', '', null, '/some-path')],
             ['http:/some-path', new Uri('http', '', '', '', null, '/some-path')],
             ['file:///some-path', new Uri('file', '', '', '', null, '/some-path')],
-            ['urn:isan:0000-0000-9E59-0000-O-0000-0000-2', new Uri('urn', '', '', '', null, 'isan:0000-0000-9E59-0000-O-0000-0000-2')],
+            [
+                'urn:isan:0000-0000-9E59-0000-O-0000-0000-2',
+                new Uri('urn', '', '', '', null, 'isan:0000-0000-9E59-0000-O-0000-0000-2')
+            ],
             ['http://test.com/some-path', new Uri('http', '', '', 'test.com', null, '/some-path')],
             ['http://test.com?val1=key1', new Uri('http', '', '', 'test.com', null, '', 'val1=key1')],
             ['http://test.com/?val1=key1', new Uri('http', '', '', 'test.com', null, '/', 'val1=key1')],
-            ['http://test.com/some-path?val1=key1', new Uri('http', '', '', 'test.com', null, '/some-path', 'val1=key1')],
+            [
+                'http://test.com/some-path?val1=key1',
+                new Uri('http', '', '', 'test.com', null, '/some-path', 'val1=key1')
+            ],
             ['http://test.com#some-fragment', new Uri('http', '', '', 'test.com', null, '', '', 'some-fragment')],
             ['http://test.com/#some-fragment', new Uri('http', '', '', 'test.com', null, '/', '', 'some-fragment')],
-            ['http://test.com/some-path#some-fragment', new Uri('http','', '',  'test.com', null, '/some-path', '', 'some-fragment')],
-            ['http://test.com/some-path?val1=key1#some-fragment', new Uri('http', '', '', 'test.com', null, '/some-path', 'val1=key1', 'some-fragment')],
+            [
+                'http://test.com/some-path#some-fragment',
+                new Uri('http', '', '', 'test.com', null, '/some-path', '', 'some-fragment')
+            ],
+            [
+                'http://test.com/some-path?val1=key1#some-fragment',
+                new Uri('http', '', '', 'test.com', null, '/some-path', 'val1=key1', 'some-fragment')
+            ],
         ];
     }
 
