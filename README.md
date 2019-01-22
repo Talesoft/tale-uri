@@ -124,3 +124,16 @@ will start using your own implementation.
 
 This is and probably will ever be the single purpose and content 
 of this library (along with 100% test coverage)
+
+
+### Q & A
+
+**Q. Why is there no `Uri::fromString(string $uri)` method or similar?**
+
+This library is designed to create the least possible dependencies
+in order to adhere to the URI standards. A `Uri::fromString(string $uri)`, by 
+design, would need to be opinionated on the way strings are parsed 
+to Uri instances and `parse_url` is not always what you want. That's
+also the reason why the factory is written as loose as possible, it's
+basically just an adapter for `parse_url` to be swapped out by
+your own implementation at any point.
