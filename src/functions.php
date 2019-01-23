@@ -15,8 +15,8 @@ function uri(
     string $path = '',
     string $query = '',
     string $fragment = ''
-): UriInterface
-{
+): UriInterface {
+
     return new Uri($scheme, $user, $password, $host, $port, $path, $query, $fragment);
 }
 
