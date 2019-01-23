@@ -6,9 +6,23 @@ use Psr\Http\Message\UriFactoryInterface;
 use Psr\Http\Message\UriInterface;
 use Tale\Uri\Factory;
 
-function uri(string $uri = ''): UriInterface
+function uri(
+    string $scheme = '',
+    string $user = '',
+    string $password = '',
+    string $host = '',
+    ?int $port = null,
+    string $path = '',
+    string $query = '',
+    string $fragment = ''
+): UriInterface
 {
-    return uri_factory()->createUri($uri);
+    return new Uri($scheme, $user, $password, $host, $port, $path, $query, $fragment);
+}
+
+function uri_parse(string $uri = ''): UriInterface
+{
+    return Uri::parse($uri);
 }
 
 function uri_factory(): UriFactoryInterface
