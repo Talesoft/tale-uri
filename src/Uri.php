@@ -472,4 +472,25 @@ final class Uri implements UriInterface
     {
         $this->uriString = null;
     }
+
+    public static function parse(string $uriString = ''): self
+    {
+        if ($uriString === '') {
+            return new self();
+        }
+        $parts = @parse_url($uriString);
+        if ($parts === false) {
+            throw new \InvalidArgumentException('The given URI is malformed');
+        }
+        return new self(
+            $parts['scheme'] ?? '',
+            $parts['user'] ?? '',
+            $parts['password'] ?? '',
+            $parts['host'] ?? '',
+            isset($parts['port']) ? (int)$parts['port'] : null,
+            $parts['path'] ?? '',
+            $parts['query'] ?? '',
+            $parts['fragment'] ?? ''
+        );
+    }
 }

@@ -543,6 +543,28 @@ class UriTest extends TestCase
         self::assertSame('https://other.host/other-path?val1=key1#some-fragment', (string)$newUri);
     }
 
+
+    /**
+     * @covers ::__construct
+     * @covers ::parse
+     */
+    public function testParse(): void
+    {
+        $uri = Uri::parse('http://test.host/some-path');
+        self::assertSame('http', $uri->getScheme());
+        self::assertSame('test.host', $uri->getHost());
+        self::assertSame('/some-path', $uri->getPath());
+    }
+    /**
+     * @covers ::__construct
+     * @covers ::parse
+     * @expectedException \InvalidArgumentException
+     */
+    public function testParseThrowsExceptionOnMalformedUri(): void
+    {
+        $uri = Uri::parse(':');
+    }
+
     public function provideNonStringArguments(): array
     {
         return [

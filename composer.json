@@ -2,7 +2,7 @@
     "name": "talesoft/tale-uri",
     "type": "library",
     "keywords": ["uri"],
-    "description": "A basic, lightweight PSR-7 compatible URI implementation",
+    "description": "A basic, lightweight PSR-7 and PSR-17 compatible URI implementation",
     "license": "MIT",
     "homepage": "http://docs.talesoft.codes/php/tale/uri",
     "authors": [
@@ -20,7 +20,12 @@
         "psr-4": {
             "Tale\\": "src",
             "Tale\\Test\\": "tests"
-        }
+        },
+        "files": ["src/functions.php"]
+    },
+    "provides": {
+        "psr/http-message-implementation": "~1.0",
+        "psr/http-factory-implementation": "~1.0"
     },
     "require-dev": {
         "talesoft/tale-dev-tool": "0.2.2"
