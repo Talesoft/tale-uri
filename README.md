@@ -24,7 +24,7 @@ Installation
 ------------
 
 ```bash
-composer require talesoft/tale-uri
+composer req talesoft/tale-uri
 ```
 
 Usage
