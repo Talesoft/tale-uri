@@ -101,8 +101,8 @@ class FunctionsTest extends TestCase
             'some string',
             (string)uri_parse('http://google.com', uri_renderer_callback(function (UriInterface $uri) {
                 return 'some string';
-            }
-        )));
+            }))
+        );
     }
 
     /**

@@ -473,6 +473,7 @@ class UriTest extends TestCase
     {
         return [
             //expectedFragment, fragment
+            ['', ''],
             ['test-fragment', 'test-fragment'],
             ['test-fragment', '#test-fragment'],
             ['%23test-fragment', '##test-fragment'],
