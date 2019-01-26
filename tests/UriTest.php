@@ -5,6 +5,7 @@ namespace Tale\Test;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\UriInterface;
 use Tale\Uri;
+use function Tale\uri;
 
 /**
  * @coversDefaultClass \Tale\Uri
@@ -87,7 +88,7 @@ class UriTest extends TestCase
      */
     public function testGetUserInfo(string $expectedUserInfo, string $user, string $password): void
     {
-        $uri = new Uri('', $user, $password, '', null, '', '', '');
+        $uri = uri()->withUserInfo($user, $password);
         self::assertSame($expectedUserInfo, $uri->getUserInfo());
     }
 
@@ -107,7 +108,7 @@ class UriTest extends TestCase
      */
     public function testWithUserInfo(string $expectedUserInfo, string $user, string $password): void
     {
-        $uri = new Uri('', 'test-user', 'test-password', '', null, '', '', '');
+        $uri = uri()->withUserInfo('test-user', 'test-password');
         $newUri = $uri->withUserInfo($user, $password);
         self::assertNotSame($uri, $newUri);
         self::assertSame('test-user:test-password', $uri->getUserInfo());
@@ -165,10 +166,10 @@ class UriTest extends TestCase
      */
     public function testGetHost(): void
     {
-        $uri = new Uri('', '', '', 'test.host');
+        $uri = new Uri('', 'test.host');
         self::assertSame('test.host', $uri->getHost());
 
-        $uri = new Uri('', '', '', 'TEST.hoST');
+        $uri = new Uri('', 'TEST.hoST');
         self::assertSame('test.host', $uri->getHost());
     }
 
@@ -180,7 +181,7 @@ class UriTest extends TestCase
      */
     public function testWithHost(): void
     {
-        $uri = new Uri('', '', '', 'test.host');
+        $uri = new Uri('', 'test.host');
         $newUri = $uri->withHost('other.host');
         self::assertNotSame($uri, $newUri);
         self::assertSame('test.host', $uri->getHost());
@@ -210,10 +211,10 @@ class UriTest extends TestCase
      */
     public function testGetPort(): void
     {
-        $uri = new Uri('', '', '', '', 15);
+        $uri = new Uri('', '', 15);
         self::assertSame(15, $uri->getPort());
         
-        $uri = new Uri('', '', '', '', 0);
+        $uri = new Uri('', '', 0);
         self::assertNull($uri->getPort());
     }
 
@@ -225,7 +226,7 @@ class UriTest extends TestCase
      */
     public function testWithPort(): void
     {
-        $uri = new Uri('', '', '', '', 15);
+        $uri = new Uri('', '', 15);
         $newUri = $uri->withPort(27);
         self::assertNotSame($uri, $newUri);
         self::assertSame(15, $uri->getPort());
@@ -269,16 +270,15 @@ class UriTest extends TestCase
     public function provideUrisForGetAuthorityTest(): array
     {
         return [
-            ['', new Uri()],
-            ['', new Uri('', '', '', '', 20)],
-            ['test.host:20', new Uri('', '', '', 'test.host', 20)],
-            ['', new Uri('', 'test', '', '', null, '', '', '')],
-            ['user@test.host', new Uri('', 'user', '', 'test.host', null, '', '', '')],
-            ['user@test.host:35', new Uri('', 'user', '', 'test.host', 35, '', '', '')],
-            ['', new Uri('', 'test', '', '', null, '', '', '')],
-            ['test.host', new Uri('', '', 'test', 'test.host', null, '', '', '')],
-            ['', new Uri('', 'test', 'test', '', 20, '', '', '')],
-            ['user:pass@test.host:20', new Uri('', 'user', 'pass', 'test.host', 20, '', '', '')],
+            ['', uri()],
+            ['', uri('', '', 20)],
+            ['test.host:20', uri('', 'test.host', 20)],
+            ['', uri()->withUserInfo('test')],
+            ['user@test.host', uri('', 'test.host')->withUserInfo('user')],
+            ['user@test.host:35', uri('', 'test.host', 35)->withUserInfo('user')],
+            ['test.host', uri('', 'test.host')->withUserInfo('', 'test')],
+            ['', uri('', '', 20)->withUserInfo('test', 'test')],
+            ['user:pass@test.host:20', uri('', 'test.host', 20)->withUserInfo('user', 'pass')],
 
         ];
     }
@@ -296,7 +296,7 @@ class UriTest extends TestCase
      */
     public function testGetPath(string $expectedPath, string $path): void
     {
-        $uri = new Uri('', '', '', '', null, $path);
+        $uri = uri()->withPath($path);
         self::assertSame($expectedPath, $uri->getPath());
     }
 
@@ -314,7 +314,7 @@ class UriTest extends TestCase
      */
     public function testWithPath(string $expectedPath, string $path): void
     {
-        $uri = new Uri('', '', '', '', null, '/test-path');
+        $uri = uri()->withPath('/test-path');
         $newUri = $uri->withPath($path);
         self::assertNotSame($uri, $newUri);
         self::assertSame('/test-path', $uri->getPath());
@@ -360,7 +360,7 @@ class UriTest extends TestCase
      */
     public function testGetQuery(string $expectedQuery, string $query): void
     {
-        $uri = new Uri('', '', '', '', null, '', $query);
+        $uri = uri()->withQuery($query);
         self::assertSame($expectedQuery, $uri->getQuery());
     }
 
@@ -378,7 +378,7 @@ class UriTest extends TestCase
      */
     public function testWithQuery(string $expectedQuery, string $query): void
     {
-        $uri = new Uri('', '', '', '', null, '', 'val1=key1');
+        $uri = uri()->withQuery('val1=key1');
         $newUri = $uri->withQuery($query);
         self::assertNotSame($uri, $newUri);
         self::assertSame('val1=key1', $uri->getQuery());
@@ -428,7 +428,7 @@ class UriTest extends TestCase
      */
     public function testGetFragment(string $expectedFragment, string $fragment): void
     {
-        $uri = new Uri('', '', '', '', null, '', '', $fragment);
+        $uri = uri()->withFragment($fragment);
         self::assertSame($expectedFragment, $uri->getFragment());
     }
 
@@ -446,7 +446,7 @@ class UriTest extends TestCase
      */
     public function testWithFragment(string $expectedFragment, string $fragment): void
     {
-        $uri = new Uri('', '', '', '', null, '', '', 'test-fragment');
+        $uri = uri()->withFragment('test-fragment');
         $newUri = $uri->withFragment($fragment);
         self::assertNotSame($uri, $newUri);
         self::assertSame('test-fragment', $uri->getFragment());
@@ -485,49 +485,14 @@ class UriTest extends TestCase
     /**
      * @covers ::__construct
      * @covers ::__toString
-     *
-     * @dataProvider provideUrisForToStringTest
-     *
-     * @param string $expectedString
-     * @param UriInterface $uri
      */
-    public function testToString(string $expectedString, UriInterface $uri): void
+    public function testToString(): void
     {
+        $uri = uri('http', 'test.com')->withPath('/some-path')->withQuery('val1=key1')->withFragment('some-fragment');
+        $expected = 'http://test.com/some-path?val1=key1#some-fragment';
         //We call it twice to make sure it's consistent across multiple string-casts
-        self::assertSame($expectedString, (string)$uri);
-        self::assertSame($expectedString, (string)$uri);
-    }
-
-    public function provideUrisForToStringTest(): array
-    {
-        return [
-            ['', new Uri()],
-            ['/', new Uri('', '', '', '', null, '/')],
-            ['/some-path', new Uri('', '', '', '', null, '/some-path')],
-            ['http:/some-path', new Uri('http', '', '', '', null, '/some-path')],
-            ['file:///some-path', new Uri('file', '', '', '', null, '/some-path')],
-            [
-                'urn:isan:0000-0000-9E59-0000-O-0000-0000-2',
-                new Uri('urn', '', '', '', null, 'isan:0000-0000-9E59-0000-O-0000-0000-2')
-            ],
-            ['http://test.com/some-path', new Uri('http', '', '', 'test.com', null, '/some-path')],
-            ['http://test.com?val1=key1', new Uri('http', '', '', 'test.com', null, '', 'val1=key1')],
-            ['http://test.com/?val1=key1', new Uri('http', '', '', 'test.com', null, '/', 'val1=key1')],
-            [
-                'http://test.com/some-path?val1=key1',
-                new Uri('http', '', '', 'test.com', null, '/some-path', 'val1=key1')
-            ],
-            ['http://test.com#some-fragment', new Uri('http', '', '', 'test.com', null, '', '', 'some-fragment')],
-            ['http://test.com/#some-fragment', new Uri('http', '', '', 'test.com', null, '/', '', 'some-fragment')],
-            [
-                'http://test.com/some-path#some-fragment',
-                new Uri('http', '', '', 'test.com', null, '/some-path', '', 'some-fragment')
-            ],
-            [
-                'http://test.com/some-path?val1=key1#some-fragment',
-                new Uri('http', '', '', 'test.com', null, '/some-path', 'val1=key1', 'some-fragment')
-            ],
-        ];
+        self::assertSame($expected, (string)$uri);
+        self::assertSame($expected, (string)$uri);
     }
 
     /**
@@ -535,34 +500,12 @@ class UriTest extends TestCase
      */
     public function testClone(): void
     {
-        $uri = new Uri('http', '', '', 'test.com', null, '/some-path', 'val1=key1', 'some-fragment');
+        $uri = uri('http', 'test.com')->withPath('/some-path')->withQuery('val1=key1')->withFragment('some-fragment');
         self::assertSame('http://test.com/some-path?val1=key1#some-fragment', (string)$uri);
         $newUri = $uri->withScheme('https')
             ->withHost('other.host')
             ->withPath('/other-path');
         self::assertSame('https://other.host/other-path?val1=key1#some-fragment', (string)$newUri);
-    }
-
-
-    /**
-     * @covers ::__construct
-     * @covers ::parse
-     */
-    public function testParse(): void
-    {
-        $uri = Uri::parse('http://test.host/some-path');
-        self::assertSame('http', $uri->getScheme());
-        self::assertSame('test.host', $uri->getHost());
-        self::assertSame('/some-path', $uri->getPath());
-    }
-    /**
-     * @covers ::__construct
-     * @covers ::parse
-     * @expectedException \InvalidArgumentException
-     */
-    public function testParseThrowsExceptionOnMalformedUri(): void
-    {
-        $uri = Uri::parse(':');
     }
 
     public function provideNonStringArguments(): array

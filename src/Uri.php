@@ -4,6 +4,8 @@ namespace Tale;
 
 use InvalidArgumentException;
 use Psr\Http\Message\UriInterface;
+use Tale\Uri\Renderer\SimpleRenderer;
+use Tale\Uri\RendererInterface;
 
 /**
  * {@inheritdoc}
@@ -26,7 +28,7 @@ final class Uri implements UriInterface
      *
      * @var string
      */
-    private $user;
+    private $user = '';
 
     /**
      * The password this URI is associated with
@@ -35,7 +37,7 @@ final class Uri implements UriInterface
      *
      * @var string
      */
-    private $password;
+    private $password = '';
 
     /**
      * The host this URI points to
@@ -62,7 +64,7 @@ final class Uri implements UriInterface
      *
      * @var string
      */
-    private $path;
+    private $path = '';
 
     /**
      * The query string this URI contains
@@ -71,7 +73,7 @@ final class Uri implements UriInterface
      *
      * @var string
      */
-    private $query;
+    private $query = '';
 
     /**
      * The fragment the URI contains
@@ -80,7 +82,10 @@ final class Uri implements UriInterface
      *
      * @var string
      */
-    private $fragment;
+    private $fragment = '';
+
+    /** @var RendererInterface */
+    private $renderer;
 
     /**
      * A cache for the fully generated URI string
@@ -94,31 +99,19 @@ final class Uri implements UriInterface
      * @param string $scheme
      * @param string $host
      * @param int|null $port
-     * @param string $path
-     * @param string $query
-     * @param string $fragment
-     * @param string $user
-     * @param string $password
+     * @param RendererInterface|null $renderer
      */
     public function __construct(
         string $scheme = '',
-        string $user = '',
-        string $password = '',
         string $host = '',
         ?int $port = null,
-        string $path = '',
-        string $query = '',
-        string $fragment = ''
+        RendererInterface $renderer = null
     ) {
-    
+
         $this->scheme = $this->filterScheme($scheme);
-        $this->user = $this->filterUser($user);
-        $this->password = $this->user === '' ? '' : $this->filterPassword($password);
         $this->host = $this->filterHost($host);
         $this->port = $this->filterPort($port);
-        $this->path = $this->filterPath($path);
-        $this->query = $this->filterQuery($query);
-        $this->fragment = $this->filterFragment($fragment);
+        $this->renderer = $renderer ?? new SimpleRenderer();
     }
 
     /**
@@ -408,8 +401,8 @@ final class Uri implements UriInterface
      * If the second parameter is passed, the characters
      * !, ', (, ) and * won't be encoded as well
      *
-     * @param string $value the value to encode
-     * @param bool|false $withDelimeters Allow extended delimeters
+     * @param string $value The value to encode.
+     * @param bool|false $withDelimeters Allow extended delimeters.
      *
      * @return string the encoded value
      */
@@ -430,38 +423,10 @@ final class Uri implements UriInterface
      */
     public function __toString()
     {
-        if ($this->uriString !== null) {
-            return $this->uriString;
+        if ($this->uriString === null) {
+            $this->uriString = $this->renderer->render($this);
         }
-
-        $scheme = $this->getScheme();
-
-        $authority = $this->getAuthority();
-        if ($authority !== '') {
-            $authority = "//{$authority}";
-        }
-
-        $path = $this->getPath();
-        if ($path !== '' && $authority === '' && $scheme === 'file') {
-            $path = "//{$path}";
-        }
-
-        if ($scheme !== '') {
-            $scheme .= ':';
-        }
-
-        $query = $this->getQuery();
-        if ($query !== '') {
-            $query = "?{$query}";
-        }
-
-        $fragment = $this->getFragment();
-        if ($fragment !== '') {
-            $fragment = "#{$fragment}";
-        }
-
-        $this->uriString = implode('', [$scheme, $authority, $path, $query, $fragment]);
-        return $this->uriString;
+        return (string)$this->uriString;
     }
 
     /**
@@ -471,26 +436,5 @@ final class Uri implements UriInterface
     public function __clone()
     {
         $this->uriString = null;
-    }
-
-    public static function parse(string $uriString = ''): self
-    {
-        if ($uriString === '') {
-            return new self();
-        }
-        $parts = @parse_url($uriString);
-        if ($parts === false) {
-            throw new \InvalidArgumentException('The given URI is malformed');
-        }
-        return new self(
-            $parts['scheme'] ?? '',
-            $parts['user'] ?? '',
-            $parts['password'] ?? '',
-            $parts['host'] ?? '',
-            isset($parts['port']) ? (int)$parts['port'] : null,
-            $parts['path'] ?? '',
-            $parts['query'] ?? '',
-            $parts['fragment'] ?? ''
-        );
     }
 }

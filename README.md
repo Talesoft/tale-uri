@@ -30,101 +30,37 @@ composer req talesoft/tale-uri
 Usage
 -----
 
-`use Tale\Uri;`
+Check out the [Functions File](https://github.com/Talesoft/tale-uri/blob/master/src/functions.php) 
+to see all things this library does.
 
-The heart, `Tale\Uri`, is just a basic and direct implementation
-of PSR-7's `Psr\Http\Message\UriInterface`.
-
-```php
-//Parse an URI
-$uri = Uri::parse('https://google.com/serach?q=test');
-
-//or construct it manually
-$uri = new Uri('https', '', '', 'google.com', '/search', 'q=test');
-
-echo $uri->getAuthority(); 
-//"google.com"
-
-echo (string)$uri; 
-//"https://google.com/search?q=test"
-    
-```
-
-### Using the factory
-
-`use Tale\Uri\Factory;`
-
-The factory is a direct implementation of PSR-17's 
-`Psr\Http\Message\UriFactoryInterface` and works with
-PHP's `parse_url`. You can always use your own factory
-to create new `Tale\Uri` instances.
+### Parse and modify URIs easily
 
 ```php
-use Tale\Uri\Factory;
+use function Tale\uri_parse;
 
-$factory = new Factory();
+$uri = uri_parse('https://google.com/search');
+//$uri is a strict implementation of PSR-7's UriInterface
 
-$uri = $factory->createUri('mysql://root:pass@localhost:3306/test');
+echo $uri->getScheme(); //"https"
+echo $uri->getHost(); "google.com"
+echo $uri->getPath(); //"/search"
 
-echo $uri->getScheme();
-//"mysql"
-
-echo $uri->getUserInfo(); 
-//"root:pass"
-
-echo $uri->getHost();
-//"root"
+echo $uri->withHost("talesoft.codes"); "https://talesoft.codes/search"
 ```
 
-If you have a Dependency Injection container, you can inject
-the factory if you registered it as a service
+### Create an URI factory for DI containers
 
 ```php
 use Psr\Http\Message\UriFactoryInterface;
+use Tale\UriFactory;
 
-class MyService
-{
-    private $uriFactory;
-    
-    public function __construct(UriFactoryInterface $uriFactory)
-    {
-        $this->uriFactory = $uriFactory;    
-    }
-    
-    public function doStuff(): void
-    {
-        $uri = $this->uriFactory->createUri('https://google.com');
-        
-        //etc. etc.
-    }
-}
+$container->add(UriFactory::class);
+
+//...
+
+$uriFactory = $container->get(UriFactoryInterface::class);
+
+$uri = $uriFactory->createUri('https://example.com#test');
+
+echo $uri->getFragment(); //"test"
 ```
-
-#### Roll your own URI factory
-
-`use Tale\Uri\FactoryTrait;`
-
-If you already have some kind of URI or HTTP factory
-or want to roll your own one, there is a trait for you to use
-that basically gives you the full functionality of the
-default factory.
-
-```php
-use Psr\Http\Message\UriFactoryInterface;
-
-class MyUriFactory implements UriFactoryInterface
-{
-    use FactoryTrait;
-    
-    //other implementations and stuff
-}
-```
-
-You can then register it in your DI container and all services
-will start using your own implementation.
-
-
-**That's it.**
-
-This is and probably will ever be the single purpose and content 
-of this library (along with 100% test coverage)
