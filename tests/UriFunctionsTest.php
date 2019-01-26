@@ -14,7 +14,7 @@ use function Tale\uri_render;
 use function Tale\uri_renderer_callback;
 use function Tale\uri_renderer_simple;
 
-class FunctionsTest extends TestCase
+class UriFunctionsTest extends TestCase
 {
     /**
      * @covers ::\Tale\uri
